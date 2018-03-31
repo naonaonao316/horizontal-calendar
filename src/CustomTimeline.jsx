@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import moment from "moment";
 import Timeline from 'react-calendar-timeline/lib';
 import generateFakeData from "./generate-fake-data";
-import {Modal,
-        Button,
-        FormGroup,
-        FormControl,
-        ControlLabel,
-        HelpBlock
-       } from "react-bootstrap";
+import { Modal,
+         Button,
+         FormGroup,
+         FormControl,
+         ControlLabel,
+         HelpBlock
+        } from "react-bootstrap";
+import ProjectForm from "./ProjectForm";
 
 var keys = {
   groupIdKey: "id",
@@ -29,6 +30,7 @@ export default class CustomTimeline extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
 
     const { groups, items } = generateFakeData();
     const defaultTimeStart = moment()
@@ -46,13 +48,20 @@ export default class CustomTimeline extends Component {
       defaultTimeEnd,
       show: false,
       projectForm: {
-        projectName: "initial value"
+        groupTitle: "",
+        valid: true
+      },
+      formA: {
+        inputFormA: {
+          value: "",
+          valid: true
+        }
       }
     };
   }
 
   getValidationState() {
-    const length = this.state.value.length;
+    const length = this.state.projectForm.groupTitle.length;
     if (length > 10) return 'success';
     else if (length > 5) return 'warning';
     else if (length > 0) return 'error';
@@ -104,7 +113,11 @@ export default class CustomTimeline extends Component {
 
   handleCanvasDoubleClick = (group, time, e) => {
     console.log("canvas gets double clicked!!");
-    this.setState({ show: true });
+    console.log(group);
+
+    let project = {groupTitle: "aaaa", valid: true}
+
+    this.setState({ show: true , projectForm: project});
   }
 
   handleClose() {
@@ -126,6 +139,12 @@ export default class CustomTimeline extends Component {
     statusCopy.projectForm[inputName] = inputValue;
 
     this.setState({ state: statusCopy });
+  }
+
+  handleSubmit() {
+    console.log("hello from submission");
+    // API call
+    this.handleClose();
   }
 
   render() {
@@ -163,24 +182,24 @@ export default class CustomTimeline extends Component {
             <Modal.Title>Project</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <h4>Text in a modal</h4>
             <form>
-              <FormGroup controlId="formBasicText">
-                <ControlLabel>Working example with validation</ControlLabel>
+              <FormGroup controlId="formBasicText" validationState={this.getValidationState()}>
+                <ControlLabel>Group</ControlLabel>
                 <FormControl
                   type="text"
-                  name="projectName"
-                  value={this.state.projectForm.projectName}
-                  placeholder="Enter text"
+                  name="groupTitle"
+                  value={this.state.projectForm.groupTitle}
+                  placeholder="Enter Group"
                   onChange={this.handleChange}
                 />
                 <FormControl.Feedback />
-                <HelpBlock>Validation is based on string length.</HelpBlock>
+                <HelpBlock>{this.getValidationState()}</HelpBlock>
               </FormGroup>
             </form>
           </Modal.Body>
           <Modal.Footer>
-            <Button bsStyle="primary" type="submit">Submit</Button>
+            <ProjectForm title="abceef" validationState={this.getValidationState()}/>
+            <Button bsStyle="primary" type="submit" onClick={this.handleSubmit}>Submit</Button>
             <Button onClick={this.handleClose}>Close</Button>
           </Modal.Footer>
         </Modal>
