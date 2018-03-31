@@ -2,7 +2,13 @@ import React, { Component } from "react";
 import moment from "moment";
 import Timeline from 'react-calendar-timeline/lib';
 import generateFakeData from "./generate-fake-data";
-import { Modal, Button } from "react-bootstrap";
+import {Modal,
+        Button,
+        FormGroup,
+        FormControl,
+        ControlLabel,
+        HelpBlock
+       } from "react-bootstrap";
 
 var keys = {
   groupIdKey: "id",
@@ -20,6 +26,7 @@ export default class CustomTimeline extends Component {
   constructor(props) {
     super(props);
 
+    this.handleChange = this.handleChange.bind(this);
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
 
@@ -37,8 +44,23 @@ export default class CustomTimeline extends Component {
       items,
       defaultTimeStart,
       defaultTimeEnd,
-      show: false
+      show: false,
+      projectForm: {
+        projectName: "initial value"
+      }
     };
+  }
+
+  getValidationState() {
+    const length = this.state.value.length;
+    if (length > 10) return 'success';
+    else if (length > 5) return 'warning';
+    else if (length > 0) return 'error';
+    return null;
+  }
+
+  handleChange(e) {
+    this.setState({ value: e.target.value });
   }
 
   handleItemMove = (itemId, dragTime, newGroupOrder) => {
@@ -93,8 +115,26 @@ export default class CustomTimeline extends Component {
     this.setState({ show: true });
   }
 
+  handleChange = (e) => {
+    let inputName = e.target.name;
+    let inputValue = e.target.value;
+
+    let statusCopy = Object.assign({}, this.state);
+    console.log(inputName);
+    console.log(inputValue);
+    console.log(statusCopy);
+    statusCopy.projectForm[inputName] = inputValue;
+
+    this.setState({ state: statusCopy });
+  }
+
   render() {
     const { groups, items, defaultTimeStart, defaultTimeEnd } = this.state;
+    console.log("groups");
+    console.log(groups);
+
+    console.log("items");
+    console.log(items);
 
     return (
       <div>
@@ -120,12 +160,27 @@ export default class CustomTimeline extends Component {
         />
         <Modal show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Modal heading</Modal.Title>
+            <Modal.Title>Project</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <h4>Text in a modal</h4>
+            <form>
+              <FormGroup controlId="formBasicText">
+                <ControlLabel>Working example with validation</ControlLabel>
+                <FormControl
+                  type="text"
+                  name="projectName"
+                  value={this.state.projectForm.projectName}
+                  placeholder="Enter text"
+                  onChange={this.handleChange}
+                />
+                <FormControl.Feedback />
+                <HelpBlock>Validation is based on string length.</HelpBlock>
+              </FormGroup>
+            </form>
           </Modal.Body>
           <Modal.Footer>
+            <Button bsStyle="primary" type="submit">Submit</Button>
             <Button onClick={this.handleClose}>Close</Button>
           </Modal.Footer>
         </Modal>
