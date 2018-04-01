@@ -155,6 +155,26 @@ export default class CustomTimeline extends Component {
     console.log("items");
     console.log(items);
 
+    const InputForm = () => {
+      return (
+        <form>
+          <FormGroup controlId="formBasicText" validationState={this.getValidationState()}>
+            <ControlLabel>Group</ControlLabel>
+            <FormControl
+              autoFocus
+              type="text"
+              name="groupTitle"
+              value={this.state.projectForm.groupTitle}
+              placeholder="Enter Group"
+              onChange={this.handleChange}
+            />
+            <FormControl.Feedback />
+            <HelpBlock>{this.getValidationState()}</HelpBlock>
+          </FormGroup>
+        </form>
+      );
+    }
+
     return (
       <div>
         <Timeline
@@ -182,20 +202,7 @@ export default class CustomTimeline extends Component {
             <Modal.Title>Project</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <form>
-              <FormGroup controlId="formBasicText" validationState={this.getValidationState()}>
-                <ControlLabel>Group</ControlLabel>
-                <FormControl
-                  type="text"
-                  name="groupTitle"
-                  value={this.state.projectForm.groupTitle}
-                  placeholder="Enter Group"
-                  onChange={this.handleChange}
-                />
-                <FormControl.Feedback />
-                <HelpBlock>{this.getValidationState()}</HelpBlock>
-              </FormGroup>
-            </form>
+            <InputForm />
           </Modal.Body>
           <Modal.Footer>
             <ProjectForm title="abceef" validationState={this.getValidationState()}/>
