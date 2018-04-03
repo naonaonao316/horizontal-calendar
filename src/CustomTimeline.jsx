@@ -7,6 +7,7 @@ import { Modal,
          FormGroup,
          FormControl,
          ControlLabel,
+         Radio,
          HelpBlock
         } from "react-bootstrap";
 import ProjectForm from "./ProjectForm";
@@ -27,7 +28,7 @@ export default class CustomTimeline extends Component {
   constructor(props) {
     super(props);
 
-    this.handleChange = this.handleChange.bind(this);
+//    this.handleChange = this.handleChange.bind(this);
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -38,14 +39,16 @@ export default class CustomTimeline extends Component {
       .toDate();
     const defaultTimeEnd = moment()
       .startOf("day")
-      .add(1, "day")
+      .add(4, "year")
       .toDate();
-
+    const movedTimeStart = defaultTimeStart;
     this.state = {
       groups,
       items,
       defaultTimeStart,
       defaultTimeEnd,
+      defaultTimeEndState: defaultTimeEnd,
+      movedTimeStart: defaultTimeStart,
       show: false,
       projectForm: {
         groupTitle: "",
@@ -68,7 +71,16 @@ export default class CustomTimeline extends Component {
     return null;
   }
 
-  handleChange(e) {
+  onTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas) => {
+    console.log("time changed")
+  }
+
+  handleScaleChange = (target_scale) => {
+    console.log('hello')
+    this.setState({defaultTimeEndState: moment().startOf("day").add(1, "year").toDate()})
+  }
+
+  handleChange = (e) => {
     this.setState({ value: e.target.value });
   }
 
@@ -141,6 +153,15 @@ export default class CustomTimeline extends Component {
     this.setState({ state: statusCopy });
   }
 
+  handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas) => {
+    console.log('Time Changed')
+    console.log(visibleTimeStart)
+    console.log('Time Changed')
+    this.setState({movedTimeStart: moment(visibleTimeStart).toDate()});
+    updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
+    console.log(this.state.movedTimeStart)
+  }
+
   handleSubmit() {
     console.log("hello from submission");
     // API call
@@ -177,6 +198,23 @@ export default class CustomTimeline extends Component {
 
     return (
       <div>
+        <FormGroup>
+          <Radio onClick={() => this.handleScaleChange()} name="radioGroup" inline>
+            Yearly
+          </Radio>
+          <Radio name="radioGroup" inline>
+            Monthly
+          </Radio>
+          <Radio name="radioGroup" inline>
+            Weekly
+          </Radio>
+          <Radio name="radioGroup" inline>
+            Daily
+          </Radio>
+          <Radio name="radioGroup" inline>
+            Hourly
+          </Radio>
+        </FormGroup>
         <Timeline
           groups={groups}
           items={items}
@@ -191,10 +229,11 @@ export default class CustomTimeline extends Component {
           canMove={true}
           canResize={true}
           defaultTimeStart={defaultTimeStart}
-          defaultTimeEnd={defaultTimeEnd}
+          defaultTimeEnd={this.state.defaultTimeEndState}
           onItemMove={this.handleItemMove}
           onItemResize={this.handleItemResize}
           onTimeChange={this.handleTimeChange}
+          onBoundsChange={this.handleBoundChange}
           onCanvasDoubleClick={this.handleCanvasDoubleClick}
         />
         <Modal show={this.state.show} onHide={this.handleClose}>
